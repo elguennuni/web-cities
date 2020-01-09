@@ -34,7 +34,7 @@ angular.module('App').controller('AddPlaceController',
             self.imageValid = false;
             original = {
                 name: null, image: null, address: null, phone: null, website: null,
-                description: null, lat: 0, lng: 0, last_update: now
+                description: null, lat: 0, lng: 0, last_update: now, name_ar:null
             };
             self.place = angular.copy(original);
         } else {
