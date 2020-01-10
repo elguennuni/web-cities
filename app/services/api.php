@@ -33,9 +33,9 @@ class API extends REST {
 
     private function dbConnect() {
         if (self::local_version)
-            new mysqli(self::DB_SERVER_LOCAL, self::DB_USER_LOCAL, self::DB_PASSWORD_LOCAL, self::DB_LOCAL);
+           $this->mysqli = new mysqli(self::DB_SERVER_LOCAL, self::DB_USER_LOCAL, self::DB_PASSWORD_LOCAL, self::DB_LOCAL);
         else
-            $this->mysqli = new mysqli(self::DB_SERVER, self::DB_USER, self::DB_PASSWORD, self::DB);
+            $this->mysqli =$this->mysqli = new mysqli(self::DB_SERVER, self::DB_USER, self::DB_PASSWORD, self::DB);
         
         $this->mysqli->query('SET CHARACTER SET utf8');
     }
