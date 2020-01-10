@@ -7,7 +7,7 @@ class API extends REST {
     public $data = "";
 
     const demo_version = false;
-    const local_version = false;
+    const local_version = true;
    
     const DB_SERVER_PROD = "citiesvivbroot.mysql.db";
     const DB_USER_PROD = "citiesvivbroot";
