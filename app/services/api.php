@@ -284,7 +284,10 @@ class API extends REST {
 		$place = json_decode(file_get_contents("php://input"),true);
 		if(!isset($place) ) $this->responseInvalidParam();
 		
-		$column_names = array('name', 'image', 'address', 'phone','website','description','lat','lng','last_update','name_ar');
+		$column_names = array('name', 'image', 'address', 'phone','website','description','lat','lng','last_update',
+                    'name_ar','address_ar','description_ar',
+                    'name_fr','address_fr','description_fr'
+                    );
 		$table_name = 'place';
 		$pk = 'place_id';
 		$this->post_one($place, $pk, $column_names, $table_name);
