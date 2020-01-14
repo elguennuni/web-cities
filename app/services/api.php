@@ -161,13 +161,13 @@ class API extends REST {
         $offset = ($page * $limit) - $limit;
         $count_total = $this->get_count_result("SELECT COUNT(DISTINCT p.place_id) FROM place p");
         $query = "SELECT DISTINCT p.place_id, p.name, p.image, p.address, p.phone, p.website, p.description, p.lat, p.lng, p.last_update,
-                   p.name_fr, p_address_fr, p.description_fr,
-                   p.name_ar, p_address_ar, p.description_ar 
+                   p.name_fr, p.address_fr, p.description_fr,
+                   p.name_ar, p.address_ar, p.description_ar 
 				  FROM place p ORDER BY p.last_update DESC LIMIT $limit OFFSET $offset";
         if ($draft == 1) {
             $query = "SELECT DISTINCT p.place_id, p.name, p.image, p.lat, p.lng, p.last_update,
-                 p.name_fr, p_address_fr, p.description_fr,
-                   p.name_ar, p_address_ar, p.description_ar 
+                 p.name_fr, p.address_fr, p.description_fr,
+                   p.name_ar, p.address_ar, p.description_ar 
 					  FROM place p ORDER BY p.last_update DESC LIMIT $limit OFFSET $offset";
         }
 
