@@ -69,7 +69,7 @@ class API extends REST {
         $resp = array("status" => 'Failed', "msg" => 'Unauthorized');
         if (isset($this->_header['Token']) && !empty($this->_header['Token'])) {
             $token = $this->_header['Token'];
-            $query = "SELECT id FROM "+DB_PREFIX_TABLE+"users WHERE password='$token' ";
+            $query = "SELECT id FROM "+self::DB_PREFIX_TABLE+"users WHERE password='$token' ";
             $r = $this->mysqli->query($query) or die($this->mysqli->error . __LINE__);
             if ($r->num_rows < 1) {
                 $this->response($this->json($resp), 200);
@@ -88,9 +88,9 @@ class API extends REST {
         if ($this->get_request_method() != "GET" )
             $this->response('', 406);
 
-        $query_p = "SELECT * FROM "+DB_PREFIX_TABLE+"place p ORDER BY p.last_update DESC;";
-        $query_pc = "SELECT * FROM "+DB_PREFIX_TABLE+"place_category;";
-        $query_i = "SELECT DISTINCT * FROM "+DB_PREFIX_TABLE+"images;";
+        $query_p = "SELECT * FROM "+self::DB_PREFIX_TABLE+"place p ORDER BY p.last_update DESC;";
+        $query_pc = "SELECT * FROM "+self::DB_PREFIX_TABLE+"place_category;";
+        $query_i = "SELECT DISTINCT * FROM "+self::DB_PREFIX_TABLE+"images;";
         $p = $this->mysqli->query($query_p) or die($this->mysqli->error . __LINE__);
         $pc = $this->mysqli->query($query_pc) or die($this->mysqli->error . __LINE__);
         $i = $this->mysqli->query($query_i) or die($this->mysqli->error . __LINE__);
@@ -114,9 +114,9 @@ class API extends REST {
     private function getApiClientDataDraft() {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
-        $query_p = "SELECT p.place_id, p.name, p.image, p.lat, p.lng, p.last_update FROM "+DB_PREFIX_TABLE+"place p ORDER BY p.last_update DESC";
-        $query_pc = "SELECT * FROM "+DB_PREFIX_TABLE+"place_category;";
-        $query_i = "SELECT DISTINCT * FROM "+DB_PREFIX_TABLE+"images;";
+        $query_p = "SELECT p.place_id, p.name, p.image, p.lat, p.lng, p.last_update FROM "+self::DB_PREFIX_TABLE+"place p ORDER BY p.last_update DESC";
+        $query_pc = "SELECT * FROM "+self::DB_PREFIX_TABLE+"place_category;";
+        $query_i = "SELECT DISTINCT * FROM "+self::DB_PREFIX_TABLE+"images;";
         $p = $this->mysqli->query($query_p) or die($this->mysqli->error . __LINE__);
         $pc = $this->mysqli->query($query_pc) or die($this->mysqli->error . __LINE__);
         $i = $this->mysqli->query($query_i) or die($this->mysqli->error . __LINE__);
@@ -143,8 +143,8 @@ class API extends REST {
         $page = isset($this->_request['page']) ? ((int) $this->_request['page']) : 1;
 
         $offset = ($page * $limit) - $limit;
-        $count_total = $this->get_count_result("SELECT COUNT(DISTINCT n.id) FROM "+DB_PREFIX_TABLE+"news_info n");
-        $query = "SELECT n.* FROM "+DB_PREFIX_TABLE+"news_info n ORDER BY n.id DESC LIMIT $limit OFFSET $offset";
+        $count_total = $this->get_count_result("SELECT COUNT(DISTINCT n.id) FROM "+self::DB_PREFIX_TABLE+"news_info n");
+        $query = "SELECT n.* FROM "+self::DB_PREFIX_TABLE+"news_info n ORDER BY n.id DESC LIMIT $limit OFFSET $offset";
         $news_infos = $this->get_list_result($query);
         $count = count($news_infos);
         $response = array(
@@ -162,16 +162,16 @@ class API extends REST {
         $draft = isset($this->_request['draft']) ? ((int) $this->_request['draft']) : 0;
 
         $offset = ($page * $limit) - $limit;
-        $count_total = $this->get_count_result("SELECT COUNT(DISTINCT p.place_id) FROM "+DB_PREFIX_TABLE+"place p");
+        $count_total = $this->get_count_result("SELECT COUNT(DISTINCT p.place_id) FROM "+self::DB_PREFIX_TABLE+"place p");
         $query = "SELECT DISTINCT p.place_id, p.name, p.image, p.address, p.phone, p.website, p.description, p.lat, p.lng, p.last_update,
                    p.name_fr, p.address_fr, p.description_fr,
                    p.name_ar, p.address_ar, p.description_ar 
-				  FROM "+DB_PREFIX_TABLE+"place p ORDER BY p.last_update DESC LIMIT $limit OFFSET $offset";
+				  FROM "+self::DB_PREFIX_TABLE+"place p ORDER BY p.last_update DESC LIMIT $limit OFFSET $offset";
         if ($draft == 1) {
             $query = "SELECT DISTINCT p.place_id, p.name, p.image, p.lat, p.lng, p.last_update,
                  p.name_fr, p.address_fr, p.description_fr,
                    p.name_ar, p.address_ar, p.description_ar 
-					  FROM "+DB_PREFIX_TABLE+"place p ORDER BY p.last_update DESC LIMIT $limit OFFSET $offset";
+					  FROM "+self::DB_PREFIX_TABLE+"place p ORDER BY p.last_update DESC LIMIT $limit OFFSET $offset";
         }
 
         $places = $this->get_list_result($query);
@@ -197,7 +197,7 @@ class API extends REST {
             $this->responseInvalidParam();
         $place_id = (int) $this->_request['place_id'];
 
-        $query = "SELECT * FROM "+DB_PREFIX_TABLE+"place p WHERE p.place_id=$place_id";
+        $query = "SELECT * FROM "+self::DB_PREFIX_TABLE+"place p WHERE p.place_id=$place_id";
         $place = $this->get_result($query);
         $place["categories"] = $this->getCategoriesArrayByPlaceId($place["place_id"]);
         $place["images"] = $this->getImagesArrayByPlaceId($place["place_id"]);
@@ -218,7 +218,7 @@ class API extends REST {
         $username = $this->clean($customer["username"]);
         $password = $this->clean($customer["password"]);
         if (!empty($username) and ! empty($password)) { // empty checker
-            $query = "SELECT id, name, username, email, password FROM "+DB_PREFIX_TABLE+"users WHERE password = '" . md5($password) . "' AND username = '$username' LIMIT 1";
+            $query = "SELECT id, name, username, email, password FROM "+self::DB_PREFIX_TABLE+"users WHERE password = '" . md5($password) . "' AND username = '$username' LIMIT 1";
             $r = $this->mysqli->query($query) or die($this->mysqli->error . __LINE__);
             if ($r->num_rows > 0) {
                 $result = $r->fetch_assoc();
@@ -235,7 +235,7 @@ class API extends REST {
             $this->response('', 406);
 
         $id = (int) $this->_request['id'];
-        $query = "SELECT id, name, username, email FROM "+DB_PREFIX_TABLE+"users WHERE id=$id";
+        $query = "SELECT id, name, username, email FROM "+self::DB_PREFIX_TABLE+"users WHERE id=$id";
         $this->get_one($query);
     }
 
@@ -295,11 +295,11 @@ class API extends REST {
         $cat_id = (isset($this->_request['cat_id'])) ? $this->_request['cat_id'] : "";
         $q = (isset($this->_request['q'])) ? ($this->_request['q']) : "";
 
-        $query = "SELECT DISTINCT p.* FROM "+DB_PREFIX_TABLE+"place p ";
+        $query = "SELECT DISTINCT p.* FROM "+self::DB_PREFIX_TABLE+"place p ";
         $keywordQuery = "(p.name REGEXP '$q' OR p.address REGEXP '$q' OR p.website REGEXP '$q' OR p.description REGEXP '$q') ";
         if ($cat_id != "") {
             $cat_id = (int) $cat_id;
-            $query = $query . ", "+DB_PREFIX_TABLE+"place_category pc WHERE pc.place_id=p.place_id AND pc.cat_id=$cat_id ";
+            $query = $query . ", "+self::DB_PREFIX_TABLE+"place_category pc WHERE pc.place_id=p.place_id AND pc.cat_id=$cat_id ";
             if ($q != "")
                 $query = $query . "AND " . $keywordQuery;
         }else {
@@ -315,7 +315,7 @@ class API extends REST {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
         $place_id = (int) $this->_request['place_id'];
-        $query = "SELECT * FROM "+DB_PREFIX_TABLE+"place p WHERE p.place_id=$place_id";
+        $query = "SELECT * FROM "+self::DB_PREFIX_TABLE+"place p WHERE p.place_id=$place_id";
         $this->get_one($query);
     }
 
@@ -374,11 +374,11 @@ class API extends REST {
         $cat_id = (isset($this->_request['cat_id'])) ? $this->_request['cat_id'] : "";
         $q = (isset($this->_request['q'])) ? ($this->_request['q']) : "";
 
-        $query = "SELECT COUNT(DISTINCT p.place_id) FROM "+DB_PREFIX_TABLE+"place p ";
+        $query = "SELECT COUNT(DISTINCT p.place_id) FROM "+self::DB_PREFIX_TABLE+"place p ";
         $keywordQuery = "(p.name REGEXP '$q' OR p.address REGEXP '$q' OR p.website REGEXP '$q' OR p.description REGEXP '$q') ";
         if ($cat_id != "") {
             $cat_id = (int) $cat_id;
-            $query = $query . ", "+DB_PREFIX_TABLE+"place_category pc WHERE pc.place_id=p.place_id AND pc.cat_id=$cat_id ";
+            $query = $query . ", "+self::DB_PREFIX_TABLE+"place_category pc WHERE pc.place_id=p.place_id AND pc.cat_id=$cat_id ";
             if ($q != "")
                 $query = $query . "AND " . $keywordQuery;
         }else {
@@ -397,11 +397,11 @@ class API extends REST {
         $cat_id = (isset($this->_request['cat_id'])) ? $this->_request['cat_id'] : "";
         $q = (isset($this->_request['q'])) ? ($this->_request['q']) : "";
 
-        $query = "SELECT DISTINCT p.* FROM "+DB_PREFIX_TABLE+"place p ";
+        $query = "SELECT DISTINCT p.* FROM "+self::DB_PREFIX_TABLE+"place p ";
         $keywordQuery = "(p.name REGEXP '$q' OR p.address REGEXP '$q' OR p.website REGEXP '$q' OR p.description REGEXP '$q') ";
         if ($cat_id != "") {
             $cat_id = (int) $cat_id;
-            $query = $query . ", "+DB_PREFIX_TABLE+"place_category pc WHERE pc.place_id=p.place_id AND pc.cat_id=$cat_id ";
+            $query = $query . ", "+self::DB_PREFIX_TABLE+"place_category pc WHERE pc.place_id=p.place_id AND pc.cat_id=$cat_id ";
             if ($q != "")
                 $query = $query . "AND " . $keywordQuery;
         }else {
@@ -421,7 +421,7 @@ class API extends REST {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
         $id = (int) $this->_request['id'];
-        $query = "SELECT * FROM "+DB_PREFIX_TABLE+"news_info n WHERE n.id=$id";
+        $query = "SELECT * FROM "+self::DB_PREFIX_TABLE+"news_info n WHERE n.id=$id";
         $this->get_one($query);
     }
 
@@ -470,7 +470,7 @@ class API extends REST {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
         $q = (isset($this->_request['q'])) ? ($this->_request['q']) : "";
-        $query = "SELECT COUNT(DISTINCT n.id) FROM "+DB_PREFIX_TABLE+"news_info n ";
+        $query = "SELECT COUNT(DISTINCT n.id) FROM "+self::DB_PREFIX_TABLE+"news_info n ";
         $keywordQuery = "(n.title REGEXP '$q' OR n.brief_content REGEXP '$q' OR n.full_content REGEXP '$q') ";
         if ($q != "")
             $query = $query . "WHERE " . $keywordQuery;
@@ -484,7 +484,7 @@ class API extends REST {
         $offset = ((int) $this->_request['page']) - 1;
         $q = (isset($this->_request['q'])) ? ($this->_request['q']) : "";
 
-        $query = "SELECT DISTINCT n.* FROM "+DB_PREFIX_TABLE+"news_info n ";
+        $query = "SELECT DISTINCT n.* FROM "+self::DB_PREFIX_TABLE+"news_info n ";
         $keywordQuery = "(n.title REGEXP '$q' OR n.brief_content REGEXP '$q' OR n.full_content REGEXP '$q') ";
         if ($q != "")
             $query = $query . "WHERE " . $keywordQuery;
@@ -500,7 +500,7 @@ class API extends REST {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
 
-        $query = "SELECT * FROM "+DB_PREFIX_TABLE+"category c ORDER BY c.cat_id ASC";
+        $query = "SELECT * FROM "+self::DB_PREFIX_TABLE+"category c ORDER BY c.cat_id ASC";
         $this->get_list($query);
     }
 
@@ -509,7 +509,7 @@ class API extends REST {
             $this->response('', 406);
 
         $cat_id = (int) $this->_request['cat_id'];
-        $query = "SELECT distinct * FROM "+DB_PREFIX_TABLE+"category c WHERE c.cat_id=$cat_id";
+        $query = "SELECT distinct * FROM "+self::DB_PREFIX_TABLE+"category c WHERE c.cat_id=$cat_id";
         $this->get_one($query);
     }
 
@@ -518,7 +518,7 @@ class API extends REST {
             $this->response('', 406);
 
         $place_id = (int) $this->_request['place_id'];
-        $query = "SELECT DISTINCT c.* FROM "+DB_PREFIX_TABLE+"category c WHERE c.cat_id IN (SELECT pc.cat_id FROM "+DB_PREFIX_TABLE+"place_category pc WHERE pc.place_id=$place_id);";
+        $query = "SELECT DISTINCT c.* FROM "+self::DB_PREFIX_TABLE+"category c WHERE c.cat_id IN (SELECT pc.cat_id FROM "+self::DB_PREFIX_TABLE+"place_category pc WHERE pc.place_id=$place_id);";
         $this->get_list($query);
     }
 
@@ -530,7 +530,7 @@ class API extends REST {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
 
-        $query = "SELECT * FROM "+DB_PREFIX_TABLE+"place_category;";
+        $query = "SELECT * FROM "+self::DB_PREFIX_TABLE+"place_category;";
         $this->get_list($query);
     }
 
@@ -539,7 +539,7 @@ class API extends REST {
             $this->response('', 406);
 
         $place_id = (int) $this->_request['place_id'];
-        $query = "SELECT * FROM "+DB_PREFIX_TABLE+"place_category WHERE place_id=" . $place_id;
+        $query = "SELECT * FROM "+self::DB_PREFIX_TABLE+"place_category WHERE place_id=" . $place_id;
         $this->get_list($query);
     }
 
@@ -553,7 +553,7 @@ class API extends REST {
             $this->responseInvalidParam();
 
         $column_names = array('place_id', 'cat_id');
-        $table_name = DB_PREFIX_TABLE+'place_category';
+        $table_name = self::DB_PREFIX_TABLE+'place_category';
         try {
             $query = "DELETE FROM " . $table_name . " WHERE place_id = " . $place_category[0]['place_id'];
             $this->mysqli->query($query);
@@ -564,7 +564,7 @@ class API extends REST {
     }
 
     private function getCategoriesArrayByPlaceId($place_id) {
-        $query = "SELECT DISTINCT pc.cat_id, c.name FROM "+DB_PREFIX_TABLE+"place_category pc, "+DB_PREFIX_TABLE+"category c WHERE c.cat_id = pc.cat_id AND pc.place_id=" . $place_id;
+        $query = "SELECT DISTINCT pc.cat_id, c.name FROM "+self::DB_PREFIX_TABLE+"place_category pc, "+self::DB_PREFIX_TABLE+"category c WHERE c.cat_id = pc.cat_id AND pc.place_id=" . $place_id;
         return $this->get_list_result($query);
     }
 
@@ -576,7 +576,7 @@ class API extends REST {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
 
-        $query = "SELECT DISTINCT * FROM "+DB_PREFIX_TABLE+"images;";
+        $query = "SELECT DISTINCT * FROM "+self::DB_PREFIX_TABLE+"images;";
         $this->get_list($query);
     }
 
@@ -585,7 +585,7 @@ class API extends REST {
             $this->response('', 406);
 
         $place_id = (int) $this->_request['place_id'];
-        $query = "SELECT DISTINCT * FROM "+DB_PREFIX_TABLE+"images i WHERE i.place_id=$place_id";
+        $query = "SELECT DISTINCT * FROM "+self::DB_PREFIX_TABLE+"images i WHERE i.place_id=$place_id";
         $this->get_list($query);
     }
 
@@ -599,7 +599,7 @@ class API extends REST {
             $this->responseInvalidParam();
 
         $column_names = array('place_id', 'name');
-        $table_name = DB_PREFIX_TABLE+'images';
+        $table_name = self::DB_PREFIX_TABLE+'images';
         try {
             $query = "DELETE FROM " . $table_name . " WHERE place_id = " . $images[0]['place_id'];
             $this->mysqli->query($query);
@@ -615,7 +615,7 @@ class API extends REST {
 
         $this->checkAuthorization();
         $_name = $this->_request['name'];
-        $table_name = DB_PREFIX_TABLE+'images';
+        $table_name = self::DB_PREFIX_TABLE+'images';
         $pk = 'name';
         $target_file = "../../uploads/place/" . $_name;
         if (file_exists($target_file)) {
@@ -625,7 +625,7 @@ class API extends REST {
     }
 
     private function getImagesArrayByPlaceId($place_id) {
-        $query = "SELECT DISTINCT i.place_id, i.name FROM "+DB_PREFIX_TABLE+"images i WHERE i.place_id=" . $place_id;
+        $query = "SELECT DISTINCT i.place_id, i.name FROM "+self::DB_PREFIX_TABLE+"images i WHERE i.place_id=" . $place_id;
         return $this->get_list_result($query);
     }
 
@@ -637,23 +637,23 @@ class API extends REST {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
         $this->checkAuthorization();
-        $query = "SELECT DISTINCT g.id, g.device, g.email, g.version, g.regid, g.date_create FROM "+DB_PREFIX_TABLE+"gcm g ORDER BY g.id DESC";
+        $query = "SELECT DISTINCT g.id, g.device, g.email, g.version, g.regid, g.date_create FROM "+self::DB_PREFIX_TABLE+"gcm g ORDER BY g.id DESC";
         $this->get_list($query);
     }
 
     private function allGcmId() {
-        $query = "SELECT DISTINCT g.regid FROM "+DB_PREFIX_TABLE+"gcm g";
+        $query = "SELECT DISTINCT g.regid FROM "+self::DB_PREFIX_TABLE+"gcm g";
         return $this->get_list_result($query);
     }
 
     private function getGcmIdByPage($page, $count) {
         $page = $page * $count;
-        $query = "SELECT g.regid FROM "+DB_PREFIX_TABLE+"gcm g ORDER BY g.id ASC LIMIT $count OFFSET $page;";
+        $query = "SELECT g.regid FROM "+self::DB_PREFIX_TABLE+"gcm g ORDER BY g.id ASC LIMIT $count OFFSET $page;";
         return $this->get_list_result($query);
     }
 
     private function getAllGcmCount() {
-        return $this->get_count_result("SELECT COUNT(g.id) FROM "+DB_PREFIX_TABLE+"gcm g");
+        return $this->get_count_result("SELECT COUNT(g.id) FROM "+self::DB_PREFIX_TABLE+"gcm g");
     }
 
     private function getGcmCount() {
@@ -662,7 +662,7 @@ class API extends REST {
         $q = (isset($this->_request['q'])) ? ($this->_request['q']) : "";
         $query = "SELECT COUNT(DISTINCT g.regid) FROM gcm g";
         if ($q != "") {
-            $query = "SELECT COUNT(DISTINCT g.regid) FROM "+DB_PREFIX_TABLE+"gcm g WHERE g.device REGEXP '$q' OR g.email REGEXP '$q'";
+            $query = "SELECT COUNT(DISTINCT g.regid) FROM "+self::DB_PREFIX_TABLE+"gcm g WHERE g.device REGEXP '$q' OR g.email REGEXP '$q'";
         }
         $this->get_count($query);
     }
@@ -695,7 +695,7 @@ class API extends REST {
         $column_names = array('device', 'email', 'version', 'regid', 'date_create');
         $table_name = 'gcm';
         $pk = 'id';
-        $query = "SELECT DISTINCT g.id FROM "+DB_PREFIX_TABLE+"gcm g WHERE g.regid='$regid' OR ( g.device='$device' AND g.email='$email' )";
+        $query = "SELECT DISTINCT g.id FROM "+self::DB_PREFIX_TABLE+"gcm g WHERE g.regid='$regid' OR ( g.device='$device' AND g.email='$email' )";
         $r = $this->mysqli->query($query) or die($this->mysqli->error . __LINE__);
         if ($r->num_rows > 0) { // update
             $result = $r->fetch_assoc();
