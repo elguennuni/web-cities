@@ -88,6 +88,12 @@ CREATE TABLE `news_info` (
   `full_content` text NOT NULL,
   `image` varchar(110) NOT NULL,
   `last_update` bigint(20) NOT NULL
+  `title_fr` varchar(100) NOT NULL,
+  `brief_content_fr` varchar(200) NOT NULL,
+  `full_content_fr` text NOT NULL,
+  `title_ar` varchar(100) NOT NULL,
+  `brief_content_ar` varchar(200) NOT NULL,
+  `full_content_ar` text NOT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

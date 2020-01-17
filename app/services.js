@@ -82,6 +82,8 @@ angular.module('App').factory("services", function ($http, $cookies) {
     };
 
     obj.insertNewsInfo = function (news_info) {
+        
+         //console.log('123 news : ', news_info);     
         return $http.post(serviceBase + 'insertNewsInfo', news_info, config).then(function (results) {
             return results.data;
         });

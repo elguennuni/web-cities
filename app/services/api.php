@@ -261,7 +261,7 @@ class API extends REST {
             $users['users']['password'] = md5($password);
             $column_names = array('id', 'name', 'username', 'email', 'password');
         }
-        $table_name = 'users';
+        $table_name = self::DB_PREFIX_TABLE.'users';
         $pk = 'id';
         $this->post_update($id, $users, $pk, $column_names, $table_name);
     }
@@ -279,7 +279,7 @@ class API extends REST {
 
         $users['password'] = md5($users['password']);
         $column_names = array('name', 'username', 'email', 'password');
-        $table_name = 'users';
+        $table_name = self::DB_PREFIX_TABLE.'users';
         $pk = 'id';
         $this->post_one($users, $pk, $column_names, $table_name);
     }
@@ -332,7 +332,7 @@ class API extends REST {
             'name_ar', 'address_ar', 'description_ar',
             'name_fr', 'address_fr', 'description_fr'
         );
-        $table_name = 'place';
+        $table_name = self::DB_PREFIX_TABLE.'place';
         $pk = 'place_id';
         $this->post_one($place, $pk, $column_names, $table_name);
     }
@@ -348,7 +348,7 @@ class API extends REST {
 
         $place_id = (int) $place['place_id'];
         $column_names = array('name', 'image', 'address', 'phone', 'website', 'description', 'lat', 'lng', 'last_update');
-        $table_name = 'place';
+        $table_name = self::DB_PREFIX_TABLE.'place';
         $pk = 'place_id';
         $this->post_update($place_id, $place, $pk, $column_names, $table_name);
     }
@@ -362,7 +362,7 @@ class API extends REST {
             $this->responseInvalidParam();
 
         $place_id = (int) $this->_request['place_id'];
-        $table_name = 'place';
+        $table_name = self::DB_PREFIX_TABLE.'place';
         $pk = 'place_id';
         $this->delete_one($place_id, $pk, $table_name);
     }
@@ -426,6 +426,7 @@ class API extends REST {
     }
 
     private function insertNewsInfo() {
+        
         if ($this->get_request_method() != "POST")
             $this->response('', 406);
 
@@ -434,8 +435,11 @@ class API extends REST {
         if (!isset($news_info))
             $this->responseInvalidParam();
 
-        $column_names = array('title', 'brief_content', 'full_content', 'image', 'last_update');
-        $table_name = 'news_info';
+        $column_names = array('title', 'brief_content', 'full_content', 'image', 'last_update',
+            'title_fr', 'brief_content_fr', 'full_content_fr',
+            'title_ar', 'brief_content_ar', 'full_content_ar'
+            );
+        $table_name =  self::DB_PREFIX_TABLE.'news_info';
         $pk = 'id';
         $this->post_one($news_info, $pk, $column_names, $table_name);
     }
@@ -448,8 +452,11 @@ class API extends REST {
         if (!isset($news_info['id']))
             $this->responseInvalidParam();
         $id = (int) $news_info['id'];
-        $column_names = array('title', 'brief_content', 'full_content', 'image', 'last_update');
-        $table_name = 'news_info';
+        $column_names = array('title', 'brief_content', 'full_content', 'image', 'last_update',
+             'title_fr', 'brief_content_fr', 'full_content_fr',
+            'title_ar', 'brief_content_ar', 'full_content_ar'
+            );
+        $table_name = self::DB_PREFIX_TABLE.'news_info';
         $pk = 'id';
         $this->post_update($id, $news_info, $pk, $column_names, $table_name);
     }
@@ -461,7 +468,7 @@ class API extends REST {
         if (!isset($this->_request['id']))
             $this->responseInvalidParam();
         $id = (int) $this->_request['id'];
-        $table_name = 'news_info';
+        $table_name = self::DB_PREFIX_TABLE.'news_info';
         $pk = 'id';
         $this->delete_one($id, $pk, $table_name);
     }
@@ -693,7 +700,7 @@ class API extends REST {
         $regid = $gcm['regid'];
 
         $column_names = array('device', 'email', 'version', 'regid', 'date_create');
-        $table_name = 'gcm';
+        $table_name =  self::DB_PREFIX_TABLE.'gcm';
         $pk = 'id';
         $query = "SELECT DISTINCT g.id FROM ".self::DB_PREFIX_TABLE."gcm g WHERE g.regid='$regid' OR ( g.device='$device' AND g.email='$email' )";
         $r = $this->mysqli->query($query) or die($this->mysqli->error . __LINE__);
