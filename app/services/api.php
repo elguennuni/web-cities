@@ -113,7 +113,7 @@ class API extends REST {
     private function getApiClientDataDraft() {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
-        $query_p = "SELECT p.place_id, p.name, p.image, p.lat, p.lng, p.last_update FROM ".self::DB_PREFIX_TABLE."place p ORDER BY p.last_update DESC";
+        $query_p = "SELECT p.place_id, p.name, p.name_ar, p.name_fr, p.image, p.lat, p.lng, p.last_update FROM ".self::DB_PREFIX_TABLE."place p ORDER BY p.last_update DESC";
         $query_pc = "SELECT * FROM ".self::DB_PREFIX_TABLE."place_category;";
         $query_i = "SELECT DISTINCT * FROM ".self::DB_PREFIX_TABLE."images;";
         $p = $this->mysqli->query($query_p) or die($this->mysqli->error . __LINE__);
@@ -210,6 +210,9 @@ class API extends REST {
      */
 
     private function login() {
+        
+        //console.log("Debut login");
+        error_log("Debut login");
         if ($this->get_request_method() != "POST")
             $this->response('', 406);
 
@@ -218,8 +221,9 @@ class API extends REST {
         $password = $this->clean($customer["password"]);
         if (!empty($username) and ! empty($password)) { // empty checker
             $query = "SELECT id, name, username, email, password FROM ".self::DB_PREFIX_TABLE."users WHERE password = '" . md5($password) . "' AND username = '$username' LIMIT 1";
-            //error_log($query);
+            error_log($query);
             $r = $this->mysqli->query($query) or die($this->mysqli->error . __LINE__);
+            error_log($r->num_rows.'');
             if ($r->num_rows > 0) {
                 $result = $r->fetch_assoc();
                 $this->response($this->json($result), 200);
@@ -347,7 +351,10 @@ class API extends REST {
             $this->responseInvalidParam();
 
         $place_id = (int) $place['place_id'];
-        $column_names = array('name', 'image', 'address', 'phone', 'website', 'description', 'lat', 'lng', 'last_update');
+        $column_names = array('name', 'image', 'address', 'phone', 'website', 'description', 'lat', 'lng', 'last_update',
+            'title_fr', 'brief_content_fr', 'full_content_fr',
+            'title_ar', 'brief_content_ar', 'full_content_ar'
+            );
         $table_name = self::DB_PREFIX_TABLE.'place';
         $pk = 'place_id';
         $this->post_update($place_id, $place, $pk, $column_names, $table_name);
@@ -667,7 +674,7 @@ class API extends REST {
         if ($this->get_request_method() != "GET")
             $this->response('', 406);
         $q = (isset($this->_request['q'])) ? ($this->_request['q']) : "";
-        $query = "SELECT COUNT(DISTINCT g.regid) FROM gcm g";
+        $query = "SELECT COUNT(DISTINCT g.regid) FROM ".self::DB_PREFIX_TABLE."gcm g";
         if ($q != "") {
             $query = "SELECT COUNT(DISTINCT g.regid) FROM ".self::DB_PREFIX_TABLE."gcm g WHERE g.device REGEXP '$q' OR g.email REGEXP '$q'";
         }
@@ -682,7 +689,7 @@ class API extends REST {
         $offset = ((int) $this->_request['page']) - 1;
         $q = (isset($this->_request['q'])) ? ($this->_request['q']) : "";
 
-        $query = "SELECT DISTINCT * FROM gcm g ";
+        $query = "SELECT DISTINCT * FROM ".self::DB_PREFIX_TABLE."gcm g ";
         if ($q != "") {
             $query = $query . "WHERE g.device REGEXP '$q' OR g.email REGEXP '$q' ";
         }
@@ -979,6 +986,7 @@ class API extends REST {
             $columns = $columns . $desired_key . "='" . $this->real_escape($$desired_key) . "',";
         }
         $query = "UPDATE " . $table_name . " SET " . trim($columns, ',') . " WHERE " . $pk . "=$id";
+        echo 'COMMENT'.$query;
         if (!empty($obj)) {
             // $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             if ($this->mysqli->query($query)) {

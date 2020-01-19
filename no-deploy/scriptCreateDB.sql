@@ -1,5 +1,5 @@
 
-    //SELECT Concat('ALTER TABLE `', TABLE_NAME, '` RENAME TO `casablanca_', TABLE_NAME, '`;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '<name of your db>';
+    -- SELECT Concat('ALTER TABLE `', TABLE_NAME, '` RENAME TO `casablanca_', TABLE_NAME, '`;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'citiesvivbroot';
     
 -- phpMyAdmin SQL Dump
 -- version OVH
