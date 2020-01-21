@@ -31,7 +31,7 @@ class TypeApplication{
     const Shenzhen = "";
     const Mumbai = "";
     const Rome = "";
-    const Mumbai = "";
+    const Athens = "";
     const Phuket = "";
     const Guangzhou = "";
     const Mecca = "";
@@ -56,3 +56,4 @@ class TypeApplication{
     const Casablanca = "casablanca_";
 
 }
+?>

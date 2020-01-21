@@ -1,6 +1,7 @@
 <?php
 
 require_once("Rest.inc.php");
+require_once("TypeApplication.php");
 
 class API extends REST {
 
