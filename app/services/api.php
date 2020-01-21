@@ -265,7 +265,7 @@ class API extends REST {
             $users['users']['password'] = md5($password);
             $column_names = array('id', 'name', 'username', 'email', 'password');
         }
-        $table_name = self::DB_PREFIX_TABLE.'users';
+        $table_name = 'users';
         $pk = 'id';
         $this->post_update($id, $users, $pk, $column_names, $table_name);
     }
@@ -346,16 +346,17 @@ class API extends REST {
             $this->response('', 406);
 
         $this->checkAuthorization();
-        $place = json_decode(file_get_contents("php://input"), true);
+        $place = json_decode(file_get_contents("php://input"), true);   
+
         if (!isset($place['place_id']))
             $this->responseInvalidParam();
 
         $place_id = (int) $place['place_id'];
         $column_names = array('name', 'image', 'address', 'phone', 'website', 'description', 'lat', 'lng', 'last_update',
-            'title_fr', 'brief_content_fr', 'full_content_fr',
-            'title_ar', 'brief_content_ar', 'full_content_ar'
+            'name_ar', 'address_ar', 'description_ar',
+            'name_fr', 'address_fr', 'description_fr'
             );
-        $table_name = self::DB_PREFIX_TABLE.'place';
+        $table_name = 'place';
         $pk = 'place_id';
         $this->post_update($place_id, $place, $pk, $column_names, $table_name);
     }
@@ -463,7 +464,7 @@ class API extends REST {
              'title_fr', 'brief_content_fr', 'full_content_fr',
             'title_ar', 'brief_content_ar', 'full_content_ar'
             );
-        $table_name = self::DB_PREFIX_TABLE.'news_info';
+        $table_name = 'news_info';
         $pk = 'id';
         $this->post_update($id, $news_info, $pk, $column_names, $table_name);
     }
@@ -918,6 +919,7 @@ class API extends REST {
         }
 
         $query = "INSERT INTO " . $table_name . "(" . trim($columns, ',') . ") VALUES(" . trim($values, ',') . ")";
+        //echo $query;
         if (!empty($obj)) {
             if ($this->mysqli->query($query)) {
                 // retrive row after insert
@@ -977,6 +979,7 @@ class API extends REST {
         $keys = array_keys($obj[$table_name]);
         $columns = '';
         $values = '';
+       
         foreach ($column_names as $desired_key) { // Check the recipe received. If key does not exist, insert blank into the array.
             if (!in_array($desired_key, $keys)) {
                 $$desired_key = '';
@@ -985,8 +988,9 @@ class API extends REST {
             }
             $columns = $columns . $desired_key . "='" . $this->real_escape($$desired_key) . "',";
         }
-        $query = "UPDATE " . $table_name . " SET " . trim($columns, ',') . " WHERE " . $pk . "=$id";
-        echo 'COMMENT'.$query;
+        
+        $query =  "UPDATE " . self::DB_PREFIX_TABLE.$table_name . " SET " . trim($columns, ',') . " WHERE " . $pk . "=$id";
+        
         if (!empty($obj)) {
             // $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             if ($this->mysqli->query($query)) {
