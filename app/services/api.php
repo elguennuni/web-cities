@@ -8,7 +8,7 @@ class API extends REST {
     public $data = "";
 
     const demo_version = false;
-    const local_version = true;          
+    const local_version = false;          
             
     const DB_PREFIX_TABLE=TypeApplication::Casablanca;
     
@@ -709,7 +709,7 @@ class API extends REST {
         $regid = $gcm['regid'];
 
         $column_names = array('device', 'email', 'version', 'regid', 'date_create');
-        $table_name =  self::DB_PREFIX_TABLE.'gcm';
+        $table_name =  'gcm';
         $pk = 'id';
         $query = "SELECT DISTINCT g.id FROM ".self::DB_PREFIX_TABLE."gcm g WHERE g.regid='$regid' OR ( g.device='$device' AND g.email='$email' )";
         $r = $this->mysqli->query($query) or die($this->mysqli->error . __LINE__);
