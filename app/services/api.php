@@ -9,7 +9,7 @@ class API extends REST {
     const demo_version = false;
     const local_version = true;          
             
-    const DB_PREFIX_TABLE="casablanca_";
+    const DB_PREFIX_TABLE=TypeApplication::Casablanca;
     
     const DB_SERVER_PROD = "citiesvivbroot.mysql.db";
     const DB_USER_PROD = "citiesvivbroot";
