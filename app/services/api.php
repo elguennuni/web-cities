@@ -10,7 +10,14 @@ class API extends REST {
     const demo_version = false;
     const local_version = false;          
             
-    const DB_PREFIX_TABLE=TypeApplication::Casablanca;
+    //const DB_PREFIX_TABLE=TypeApplication::Casablanca;
+    
+    //const DB_PREFIX_TABLE=TypeApplication::Bangkok;
+    //const DB_PREFIX_TABLE=TypeApplication::Paris;
+    //const DB_PREFIX_TABLE=TypeApplication::London;
+    //const DB_PREFIX_TABLE=TypeApplication::Dubai;
+    const DB_PREFIX_TABLE=TypeApplication::Singapore;
+
     
     const DB_SERVER_PROD = "citiesvivbroot.mysql.db";
     const DB_USER_PROD = "citiesvivbroot";
